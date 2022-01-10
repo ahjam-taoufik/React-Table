@@ -1,12 +1,12 @@
 import "./App.css";
-import { FiltringTable } from "./components/FiltringTable";
+import { PaginationTable } from "./components/PaginationTable";
 
 
 function App() {
   return (
     <div className="App">
-      <FiltringTable/>
     
+    <PaginationTable/>
     </div>
   );
 }

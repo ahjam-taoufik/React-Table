@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react'
-import { useTable, useGlobalFilter } from 'react-table'
+import { useTable, usePagination } from 'react-table'
 import MOCK_DATA from './data.json'
 import { COLUMNS } from './columns'
 import './table.css'
-import { GlobalFilter } from './GlobalFilter'
 
-export const FiltringTable= () => {
+export const PaginationTable = () => {
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
 
@@ -13,21 +12,27 @@ export const FiltringTable= () => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    footerGroups,
-    rows,
-    prepareRow,
+    page,
+    nextPage,
+    previousPage,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
     state,
-    setGlobalFilter,
-  } = useTable({
-    columns,
-    data
-  },useGlobalFilter)
+    prepareRow
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0 }
+    },
+    usePagination
+  )
 
-const {globalFilter}=state
+  const { pageIndex } = state
 
   return (
     <>
-    <GlobalFilter  filter={globalFilter} setFilter={setGlobalFilter}   />
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
@@ -39,7 +44,7 @@ const {globalFilter}=state
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
+          {page.map(row => {
             prepareRow(row)
             return (
               <tr {...row.getRowProps()}>
@@ -50,16 +55,19 @@ const {globalFilter}=state
             )
           })}
         </tbody>
-        <tfoot>
-          {footerGroups.map(footerGroup => (
-            <tr {...footerGroup.getFooterGroupProps()}>
-              {footerGroup.headers.map(column => (
-                <td {...column.getFooterProps()}>{column.render('Footer')}</td>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
       </table>
+      <div>
+    
+        <span>
+          Page{' '}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{' '}
+        </span>
+        <button onClick={()=>previousPage()} disabled={!canPreviousPage} >Previous</button>
+        <button onClick={()=>nextPage()} disabled={!canNextPage} >next</button>
+      
+      </div>
     </>
   )
 }
