@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react'
-import { useTable, useSortBy } from 'react-table'
+import { useTable, useGlobalFilter } from 'react-table'
 import MOCK_DATA from './data.json'
 import { COLUMNS } from './columns'
 import './table.css'
+import { GlobalFilter } from './GlobalFilter'
 
-export const SortTable = () => {
+export const FiltringTable= () => {
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
 
@@ -14,32 +15,25 @@ export const SortTable = () => {
     headerGroups,
     footerGroups,
     rows,
-    prepareRow
-  } = useTable(
-    {
-      columns,
-      data
-    },
-    useSortBy
-  )
+    prepareRow,
+    state,
+    setGlobalFilter,
+  } = useTable({
+    columns,
+    data
+  },useGlobalFilter)
+
+const {globalFilter}=state
 
   return (
     <>
+    <GlobalFilter  filter={globalFilter} setFilter={setGlobalFilter}   />
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? ' 🔽'
-                        : ' 🔼'
-                      : ''}
-                  </span>
-                </th>
+                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
               ))}
             </tr>
           ))}
